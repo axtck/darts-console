@@ -6,6 +6,8 @@ namespace DartsConsole
 {
     class GameMeta
     {
+
+        public string[] StartOptions = { "Quick game", "Setup game" };
         public string[] GameModes = { "Double Out", "Cricket" };
     }
 }

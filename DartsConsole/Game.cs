@@ -6,7 +6,7 @@ namespace DartsConsole
 {
     class Game
     {
-        public string Type { get; set; }
+        public string Mode { get; set; }
 
         // players in game
         public List<Player> Players { get; set; }
@@ -26,21 +26,21 @@ namespace DartsConsole
         GameMeta gameMeta = new GameMeta();
 
         // default 501 double out game with players and legs 
-        public Game(List<Player> players, int legs)
+        public Game(List<Player> players)
         {
-            this.Type = gameMeta.GameModes[0];
+            this.Mode = gameMeta.GameModes[0];
             this.Players = players;
             this.CurrentPlayer = players[0];
             this.StartScore = 501;
-            this.Legs = legs;
+            this.Legs = 5;
             this.Sets = 1;
             this.Records = new List<string>();
         }
 
         // full game with options
-        public Game(string type, List<Player> players, int startScore, int legs, int sets)
+        public Game(string mode, List<Player> players, int startScore, int legs, int sets)
         {
-            this.Type = type;
+            this.Mode = mode;
             this.Players = players;
             this.CurrentPlayer = players[0];
             this.StartScore = startScore;
@@ -72,6 +72,17 @@ namespace DartsConsole
             for (int i = 0; i < this.Records.Count; i++)
             {
                 Console.Write($"{this.Records[i]}\n");
+            }
+        }
+
+        public void ShowStatus()
+        {
+            Console.Write("Game status\n");
+            Console.Write($"Game mode: {this.Mode}\n");
+
+            for (int i = 0; i < this.Players.Count; i++)
+            {
+                Console.Write($"{this.Players[i].GetRecord()}\n");
             }
         }
     }

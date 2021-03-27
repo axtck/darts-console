@@ -7,36 +7,59 @@ namespace DartsConsole
     {
         static void Main(string[] args)
         {
-            Console.Write("Welcome to Darts Console!\n");
-            Console.Write("-------------------------\n\n");
-            Console.Write("What game do you want to play?\n");
+            Console.Write("Welcome to Darts Console!\n\n"); // write welcome message
 
+            Game game = GetGameSetup(); // get game setup
 
-            GameMeta gameMeta = new GameMeta();
-            string[] gameTypes = gameMeta.GameModes;
-
-            string gameMode = SelectGameMode(gameTypes);
-            List<Player> players = GetPlayers();
-
-            
-
-            Game game = new Game(players, 5);
-
-            game.DisplayPlayers();
+            game.ShowStatus(); // show status after setup
 
             Console.Read();
         }
 
-        static string SelectGameMode(string[] gameTypes)
+        static Game GetGameSetup()
         {
-            for (int i = 0; i < gameTypes.Length; i++)
+            // get meta data
+            GameMeta gameMeta = new GameMeta();
+            string[] startOptions = gameMeta.StartOptions;
+            string[] gameModes = gameMeta.GameModes;
+
+
+            // get players
+            Console.Write("Enter player names\nType done when ready\n\n");
+            List<Player> players = GetPlayers();
+            Console.Write($"{players.Count} players added!\n");
+
+            int startOptionIndex = GetOptionsIndex(startOptions); // get start options (quick game / setup)
+
+            Game game = new Game(players); // add game with players
+
+            // if setup is chosen
+            if (startOptionIndex == 1)
             {
-                Console.Write($"{gameTypes[i]} ({i + 1}) ");
+                int gameModeIndex = GetOptionsIndex(gameModes); // get game mode
+                game = new Game(gameModes[gameModeIndex], players, 501, 5, 3); // override game with more setup options
+            }
+
+            // give players their start score
+            for (int i = 0; i < players.Count; i++)
+            {
+                players[i].ScoreLeft = game.StartScore;
+            }
+
+            return game;
+        }
+
+        static int GetOptionsIndex(string[] options)
+        {
+            // display options
+            for (int i = 0; i < options.Length; i++)
+            {
+                Console.Write($"({i + 1}){options[i]}\t");
             }
 
             Console.Write("\n");
 
-            string gameType;
+            int index;
 
             while (true)
             {
@@ -44,30 +67,32 @@ namespace DartsConsole
 
                 try
                 {
-                    int gameTypeIndex = Convert.ToInt32(line); // try converting to int
-                    if (gameTypeIndex > 0 && gameTypeIndex < gameTypes.Length + 1)
+                    index = Convert.ToInt32(line); // try converting to int
+
+                    // get index
+                    if (index > 0 && index < options.Length + 1)
                     {
-                        gameType = gameTypes[gameTypeIndex - 1]; // set gameType
+                        index = index - 1;
                         break;
                     }
                     else
                     {
-                        throw new Exception(); // throw an exception to catch  
+                        throw new Exception(); // throw exception to catch
                     }
                 }
                 catch
                 {
-                    Console.WriteLine("Please fill in a valid option");
+                    Console.WriteLine("Please fill in a valid option.");
                 }
             }
 
-            return gameType;
+            return index;
         }
 
+        
         static List<Player> GetPlayers()
         {
             List<Player> players = new List<Player>();
-            Console.Write("Enter player names\nType done when ready\n\n");
 
             while (true)
             {
@@ -78,13 +103,11 @@ namespace DartsConsole
                     break;
                 }
 
-                Player player = new Player(line, 501);
-                players.Add(player);
+                Player player = new Player(line);
+                players.Add(player); // fill up list with players
 
-                Console.Write($"Player {player.Name} added\n");
+                Console.Write($"Player {player.Name} added.\n");
             }
-
-            Console.Write($"{players.Count} players added!\n");
 
             return players;
         }
