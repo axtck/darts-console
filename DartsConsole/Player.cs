@@ -15,7 +15,8 @@ namespace DartsConsole
         public int TotalScore { get; set; }
         public int ScoreLeft { get; set; }
         public double Average { get; set; }
-
+        public int LegsWon { get; set; }
+        public int SetsWon { get; set; }
 
         public Player(string name)
         {
@@ -25,20 +26,32 @@ namespace DartsConsole
         public string GetRecord()
         {
             // return a record for a throw
-            return $"Name: {this.Name} --- Score left: {this.ScoreLeft} --- Points last turn: {this.Score} --- Average: {this.Average}\n";
+            return $"Name: {this.Name} --- Score left: {this.ScoreLeft} --- Points last turn: {this.Score} " +
+                $"--- Average: {this.Average} --- Legs won: {this.LegsWon} --- Sets won: {this.SetsWon}";
         }
 
         public void CalcScore()
         {
             this.Turns++; // add a turn
             this.TotalScore += this.Score; // add score to total
-            this.ScoreLeft -= this.TotalScore; // subtract total from points left
+            this.ScoreLeft -= this.Score; // subtract score from points left
         }
-
 
         public void CalcAverage()
         {
             this.Average = this.TotalScore / this.Turns; // calculate average
+        }
+
+        public void DoCalculations()
+        {
+            this.CalcScore();
+            this.CalcAverage();
+        }
+
+        public void DisplayWinner()
+        {
+            Console.Clear();
+            Console.Write($"{this.Name} has won the game!\n\n");
         }
     }
 }

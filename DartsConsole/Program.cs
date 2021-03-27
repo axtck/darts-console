@@ -11,9 +11,14 @@ namespace DartsConsole
 
             Game game = GetGameSetup(); // get game setup
 
+            Console.Clear();
+
             game.ShowStatus(); // show status after setup
 
+            game.Play();
+
             Console.Read();
+
         }
 
         static Game GetGameSetup()
@@ -37,7 +42,7 @@ namespace DartsConsole
             if (startOptionIndex == 1)
             {
                 int gameModeIndex = GetOptionsIndex(gameModes); // get game mode
-                game = new Game(gameModes[gameModeIndex], players, 501, 5, 3); // override game with more setup options
+                game = new Game(gameModes[gameModeIndex], players, 501, 1, 1); // override game with more setup options
             }
 
             // give players their start score
@@ -89,7 +94,7 @@ namespace DartsConsole
             return index;
         }
 
-        
+
         static List<Player> GetPlayers()
         {
             List<Player> players = new List<Player>();
