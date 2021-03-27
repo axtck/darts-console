@@ -9,35 +9,84 @@ namespace DartsConsole
         {
             Console.Write("Welcome to Darts Console!\n");
             Console.Write("-------------------------\n\n");
+            Console.Write("What game do you want to play?\n");
 
-            // players
-            Player player1 = new Player("Alexander", 501);
-            Player player2 = new Player("Hendrik", 501);
 
-            // add players
-            List<Player> players = new List<Player>();
-            players.Add(player1);
-            players.Add(player2);
+            GameMeta gameMeta = new GameMeta();
+            string[] gameTypes = gameMeta.GameModes;
 
-            // game
+            string gameMode = SelectGameMode(gameTypes);
+            List<Player> players = GetPlayers();
+
+            
+
             Game game = new Game(players, 5);
 
-            game.Start();
-
-            player1.Score = 55;
-            player1.CalcScore();
-            player1.CalcAverage();
-            game.DisplayCurrentPlayer();
-
-            player1.Score = 44;
-            player1.CalcScore();
-            player1.CalcAverage();
-            game.DisplayCurrentPlayer();
-
+            game.DisplayPlayers();
 
             Console.Read();
+        }
 
+        static string SelectGameMode(string[] gameTypes)
+        {
+            for (int i = 0; i < gameTypes.Length; i++)
+            {
+                Console.Write($"{gameTypes[i]} ({i + 1}) ");
+            }
 
+            Console.Write("\n");
+
+            string gameType;
+
+            while (true)
+            {
+                string line = Console.ReadLine();
+
+                try
+                {
+                    int gameTypeIndex = Convert.ToInt32(line); // try converting to int
+                    if (gameTypeIndex > 0 && gameTypeIndex < gameTypes.Length + 1)
+                    {
+                        gameType = gameTypes[gameTypeIndex - 1]; // set gameType
+                        break;
+                    }
+                    else
+                    {
+                        throw new Exception(); // throw an exception to catch  
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Please fill in a valid option");
+                }
+            }
+
+            return gameType;
+        }
+
+        static List<Player> GetPlayers()
+        {
+            List<Player> players = new List<Player>();
+            Console.Write("Enter player names\nType done when ready\n\n");
+
+            while (true)
+            {
+                string line = Console.ReadLine();
+
+                if (line == "done")
+                {
+                    break;
+                }
+
+                Player player = new Player(line, 501);
+                players.Add(player);
+
+                Console.Write($"Player {player.Name} added\n");
+            }
+
+            Console.Write($"{players.Count} players added!\n");
+
+            return players;
         }
     }
 }

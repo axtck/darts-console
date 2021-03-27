@@ -13,26 +13,26 @@ namespace DartsConsole
         public int Turns { get; set; }
         public int Score { get; set; }
         public int TotalScore { get; set; }
-        public int PointsLeft { get; set; }
+        public int ScoreLeft { get; set; }
         public double Average { get; set; }
 
         public Player(string name, int startScore)
         {
             this.Name = name;
-            this.PointsLeft = startScore;
+            this.ScoreLeft = startScore;
         }
 
         public string GetRecord()
         {
             // return a record for a throw
-            return $"Name: {this.Name} --- Points left: {this.PointsLeft} --- Last score: {this.Score} --- Average: {this.Average}\n";
+            return $"Name: {this.Name} --- Score left: {this.ScoreLeft} --- Last scored points: {this.Score} --- Average: {this.Average}\n";
         }
 
         public void CalcScore()
         {
             this.Turns++; // add a turn
             this.TotalScore += this.Score; // add score to total
-            this.PointsLeft -= this.TotalScore; // subtract total from points left
+            this.ScoreLeft -= this.TotalScore; // subtract total from points left
         }
 
 
