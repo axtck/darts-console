@@ -14,6 +14,8 @@ namespace DartsConsole
         // player that has turn
         public Player CurrentPlayer { get; set; }
 
+        // player that starts leg
+        public Player StartingPlayer { get; set; }
 
         // score stats 
         public int StartScore { get; set; }
@@ -28,7 +30,7 @@ namespace DartsConsole
 
         private int playerIndex = 0;
 
-        // default 501 double out game with players and legs 
+        // default 501 double out game with players 
         public Game(List<Player> players)
         {
             this.Mode = gameMeta.GameModes[0];
@@ -36,7 +38,7 @@ namespace DartsConsole
             this.CurrentPlayer = players[playerIndex];
             this.StartScore = 501;
             this.Legs = 5;
-            this.Sets = 1;
+            this.Sets = 3;
             this.Records = new List<string>();
         }
 
@@ -60,30 +62,42 @@ namespace DartsConsole
                 this.GetCurrentPlayerScore(); // get the current player score
                 this.CurrentPlayer.DoCalculations(); // calculate score and average
 
-                if(this.CurrentPlayer.ScoreLeft == 0)
+                Console.Write($"{this.CurrentPlayer.GetRecord()}\n"); // write record to console
+                this.SaveRecord(); // save current record to records
+
+                // if leg won
+                if (this.CurrentPlayer.ScoreLeft == 0)
                 {
                     this.CurrentPlayer.LegsWon++;
 
-                    for(int i = 0; i < this.Players.Count; i++)
+                    // reset players score
+                    for (int i = 0; i < this.Players.Count; i++)
                     {
                         this.Players[i].ScoreLeft = this.StartScore;
                     }
+
+                    this.CurrentPlayer.Win("leg");
                 }
 
-                if(this.CurrentPlayer.LegsWon == this.Legs)
+                // if set won
+                if (this.CurrentPlayer.LegsWon == this.Legs)
                 {
-                    this.CurrentPlayer.LegsWon = 0;
+                    // reset players legs
+                    for (int i = 0; i < this.Players.Count; i++)
+                    {
+                        this.Players[i].LegsWon = 0;
+                    }
+
                     this.CurrentPlayer.SetsWon++;
-                    Console.Clear();
+                    this.CurrentPlayer.Win("set");
                 }
 
-                if(this.CurrentPlayer.SetsWon == this.Sets)
+                // if game won
+                if (this.CurrentPlayer.SetsWon == this.Sets)
                 {
-                    this.CurrentPlayer.DisplayWinner();
+                    this.CurrentPlayer.Win("game");
+                    break; // game over
                 }
-
-                Console.Write($"{this.CurrentPlayer.GetRecord()}\n"); // write record to console
-                this.SaveRecord(); // save current record to records
 
                 playerIndex++; // add 1 to player index
                 if (playerIndex >= this.Players.Count)
@@ -93,7 +107,6 @@ namespace DartsConsole
 
                 this.CurrentPlayer = this.Players[playerIndex]; // set new current player
             }
-            
         }
 
         public void GetCurrentPlayerScore()
@@ -109,7 +122,7 @@ namespace DartsConsole
                     this.CurrentPlayer.Score = Convert.ToInt32(line);
 
                     // check if score is in range 0 - 180
-                    if(this.CurrentPlayer.Score >= 0 && this.CurrentPlayer.Score < 181)
+                    if (this.CurrentPlayer.Score >= 0 && this.CurrentPlayer.Score < 181)
                     {
                         break;
                     }
@@ -118,21 +131,13 @@ namespace DartsConsole
                         throw new Exception();
                     }
                 }
-                catch 
+                catch
                 {
                     Console.Write("Please fill in a valid score.\n");
                 }
             }
 
             Console.Write($"{this.CurrentPlayer.Score} scored by {this.CurrentPlayer.Name}.\n");
-        }
-
-        public void DisplayPlayers()
-        {
-            for (int i = 0; i < this.Players.Count; i++)
-            {
-                Console.Write($"{this.Players[i].Name}\n");
-            }
         }
 
         public void SaveRecord()
@@ -156,7 +161,7 @@ namespace DartsConsole
 
             for (int i = 0; i < this.Players.Count; i++)
             {
-                Console.Write($"{this.Players[i].GetRecord()}");
+                Console.Write($"Player {i + 1}: {this.Players[i].GetInfo()}\n");
             }
         }
     }

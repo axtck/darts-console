@@ -12,13 +12,11 @@ namespace DartsConsole
             Game game = GetGameSetup(); // get game setup
 
             Console.Clear();
-
             game.ShowStatus(); // show status after setup
 
-            game.Play();
+            game.Play(); // play game
 
             Console.Read();
-
         }
 
         static Game GetGameSetup()
@@ -28,21 +26,32 @@ namespace DartsConsole
             string[] startOptions = gameMeta.StartOptions;
             string[] gameModes = gameMeta.GameModes;
 
-
-            // get players
-            Console.Write("Enter player names\nType done when ready\n\n");
             List<Player> players = GetPlayers();
+
+            // while not confirmed
+            while (!ConfirmPlayers(players))
+            {
+                // clear console and override players
+                Console.Clear();
+                players.Clear();
+                players = GetPlayers();
+            }
+
+            Game game = new Game(players); // create game with players
+
+            Console.Clear();
+
             Console.Write($"{players.Count} players added!\n");
+            Console.Write("Select game mode\n");
 
             int startOptionIndex = GetOptionsIndex(startOptions); // get start options (quick game / setup)
 
-            Game game = new Game(players); // add game with players
 
             // if setup is chosen
             if (startOptionIndex == 1)
             {
                 int gameModeIndex = GetOptionsIndex(gameModes); // get game mode
-                game = new Game(gameModes[gameModeIndex], players, 501, 1, 1); // override game with more setup options
+                game = new Game(gameModes[gameModeIndex], players, 501, 5, 3); // override game with more setup options
             }
 
             // give players their start score
@@ -87,7 +96,7 @@ namespace DartsConsole
                 }
                 catch
                 {
-                    Console.WriteLine("Please fill in a valid option.");
+                    Console.Write("Please fill in a valid option.\n");
                 }
             }
 
@@ -99,11 +108,13 @@ namespace DartsConsole
         {
             List<Player> players = new List<Player>();
 
+            Console.Write("Enter player names\nType done when ready\n\n");
+
             while (true)
             {
                 string line = Console.ReadLine();
 
-                if (line == "done")
+                if (line.ToLower() == "done")
                 {
                     break;
                 }
@@ -115,6 +126,36 @@ namespace DartsConsole
             }
 
             return players;
+        }
+
+        static bool ConfirmPlayers(List<Player> players)
+        {
+            Console.Write("Players added:\n");
+
+            for (int i = 0; i < players.Count; i++)
+            {
+                Console.Write($"{players[i].Name}\n");
+            }
+
+            Console.Write("Confirm (y/n): ");
+
+            while (true)
+            {
+                string line = Console.ReadLine();
+
+                if (line.ToLower() == "y" || line == "")
+                {
+                    return true;
+                }
+                else if (line.ToLower() == "n")
+                {
+                    return false;
+                }
+                else
+                {
+                    Console.Write("Please fill in a valid option.\n");
+                }
+            }
         }
     }
 }

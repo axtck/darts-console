@@ -30,6 +30,11 @@ namespace DartsConsole
                 $"--- Average: {this.Average} --- Legs won: {this.LegsWon} --- Sets won: {this.SetsWon}";
         }
 
+        public string GetInfo()
+        {
+            return $"Name: {this.Name}";
+        }
+
         public void CalcScore()
         {
             this.Turns++; // add a turn
@@ -48,10 +53,10 @@ namespace DartsConsole
             this.CalcAverage();
         }
 
-        public void DisplayWinner()
+        public void Win(string matchPart)
         {
             Console.Clear();
-            Console.Write($"{this.Name} has won the game!\n\n");
+            Console.Write($"{this.Name} has won the {matchPart}!\n\n");
         }
     }
 }
