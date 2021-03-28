@@ -14,9 +14,6 @@ namespace DartsConsole
         // player that has turn
         public Player CurrentPlayer { get; set; }
 
-        // player that starts leg
-        public Player StartingPlayer { get; set; }
-
         // score stats 
         public int StartScore { get; set; }
         public int Legs { get; set; }
@@ -28,7 +25,8 @@ namespace DartsConsole
         // meta for gametype
         private GameMeta gameMeta = new GameMeta();
 
-        private int playerIndex = 0;
+        private int playerIndex = 0; // index for player that has turn
+        private int starterIndex = 0; // index for player that has to start leg
 
         // default 501 double out game with players 
         public Game(List<Player> players)
@@ -62,13 +60,13 @@ namespace DartsConsole
                 this.GetCurrentPlayerScore(); // get the current player score
                 this.CurrentPlayer.DoCalculations(); // calculate score and average
 
-                Console.Write($"{this.CurrentPlayer.GetRecord()}\n"); // write record to console
+                Console.Write($"{this.CurrentPlayer.GetRecord()}\n\n"); // write record to console
                 this.SaveRecord(); // save current record to records
 
-                // if leg won
+                // leg won
                 if (this.CurrentPlayer.ScoreLeft == 0)
                 {
-                    this.CurrentPlayer.LegsWon++;
+                    this.CurrentPlayer.LegsWon++; // add leg to record
 
                     // reset players score
                     for (int i = 0; i < this.Players.Count; i++)
@@ -77,9 +75,28 @@ namespace DartsConsole
                     }
 
                     this.CurrentPlayer.Win("leg");
+
+                    starterIndex++; // start index +1
+
+                    if (starterIndex >= this.Players.Count)
+                    {
+                        starterIndex = 0; // reset starter index if last player has started a leg
+                    }
+
+                    playerIndex = starterIndex; // set player index equal to start index
+                }
+                else
+                {
+                    // if leg is in play
+                    playerIndex++; // player index +1
+                    if (playerIndex >= this.Players.Count)
+                    {
+                        playerIndex = 0; // reset player index when last player has thrown
+                    }
+
                 }
 
-                // if set won
+                // set won
                 if (this.CurrentPlayer.LegsWon == this.Legs)
                 {
                     // reset players legs
@@ -92,17 +109,11 @@ namespace DartsConsole
                     this.CurrentPlayer.Win("set");
                 }
 
-                // if game won
+                // game won
                 if (this.CurrentPlayer.SetsWon == this.Sets)
                 {
                     this.CurrentPlayer.Win("game");
                     break; // game over
-                }
-
-                playerIndex++; // add 1 to player index
-                if (playerIndex >= this.Players.Count)
-                {
-                    playerIndex = 0; // reset player index when last player has thrown
                 }
 
                 this.CurrentPlayer = this.Players[playerIndex]; // set new current player
